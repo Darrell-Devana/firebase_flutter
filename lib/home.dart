@@ -8,9 +8,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isDoorLocked1 = false; // Initial value for the first switch
-  bool isDoorLocked2 = false; // Initial value for the second switch
-  bool isDoorLocked3 = false; // Initial value for the third switch
+  bool isDoorLocked1 = false;
+  bool isDoorLocked2 = false;
+  bool isDoorLocked3 = false;
 
   @override
   Widget build(BuildContext context) {
@@ -18,49 +18,48 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: const Text('Firebase Read and Write'),
       ),
-      body: Column(
+      body: Center(
+        child: Column(
+          children: [
+            buildRoomSwitch('Room 1', isDoorLocked1, (value) {
+              setState(() {
+                isDoorLocked1 = value;
+              });
+            }),
+            buildRoomSwitch('Room 2', isDoorLocked2, (value) {
+              setState(() {
+                isDoorLocked2 = value;
+              });
+            }),
+            buildRoomSwitch('Room 3', isDoorLocked3, (value) {
+              setState(() {
+                isDoorLocked3 = value;
+              });
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildRoomSwitch(
+      String roomName, bool isLocked, Function(bool) onChanged) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
+      child: Row(
         children: [
-          const SizedBox(height: 20),
-          const Center(
-            child: Text(
-              'Door lock',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+          Expanded(
+            child: Text(roomName, style: TextStyle(fontSize: 18)),
           ),
-          const SizedBox(height: 20),
-          Column(
-            children: [
-              SwitchListTile(
-                title: Text(isDoorLocked1 ? 'Locked' : 'Unlocked'),
-                value: isDoorLocked1,
-                onChanged: (bool value) {
-                  setState(() {
-                    isDoorLocked1 = value;
-                  });
-                },
-                secondary: Icon(isDoorLocked1 ? Icons.lock : Icons.lock_open),
-              ),
-              SwitchListTile(
-                title: Text(isDoorLocked2 ? 'Locked' : 'Unlocked'),
-                value: isDoorLocked2,
-                onChanged: (bool value) {
-                  setState(() {
-                    isDoorLocked2 = value;
-                  });
-                },
-                secondary: Icon(isDoorLocked2 ? Icons.lock : Icons.lock_open),
-              ),
-              SwitchListTile(
-                title: Text(isDoorLocked3 ? 'Locked' : 'Unlocked'),
-                value: isDoorLocked3,
-                onChanged: (bool value) {
-                  setState(() {
-                    isDoorLocked3 = value;
-                  });
-                },
-                secondary: Icon(isDoorLocked3 ? Icons.lock : Icons.lock_open),
-              ),
-            ],
+          Transform.scale(
+            scale:
+                1.5, // Customize the switch size by adjusting the scale value
+            child: Switch(
+              value: isLocked,
+              onChanged: onChanged,
+              activeColor: Colors.green,
+              inactiveTrackColor: Colors.red,
+            ),
           ),
         ],
       ),
