@@ -76,7 +76,7 @@ class _HomeState extends State<Home> {
               });
               updateFirebaseValue('door3', value);
             }),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
@@ -94,7 +94,7 @@ class _HomeState extends State<Home> {
       child: Row(
         children: [
           Expanded(
-            child: Text(roomName, style: TextStyle(fontSize: 18)),
+            child: Text(roomName, style: const TextStyle(fontSize: 18)),
           ),
           Transform.scale(
             scale:
