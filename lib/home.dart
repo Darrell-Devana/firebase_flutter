@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -8,9 +9,29 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isDoorLocked1 = false;
-  bool isDoorLocked2 = false;
-  bool isDoorLocked3 = false;
+  final databaseRef = FirebaseDatabase.instance.ref();
+  late DatabaseReference reference;
+
+  bool doorLock1 = false;
+  bool doorLock2 = false;
+  bool doorLock3 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    reference = databaseRef.child('rooms');
+    reference.onValue.listen((event) {
+      var snapshot = event.snapshot;
+      if (snapshot.value != null) {
+        var rooms = snapshot.value as Map<dynamic, dynamic>;
+        setState(() {
+          doorLock1 = rooms['door1'] ?? false;
+          doorLock2 = rooms['door2'] ?? false;
+          doorLock3 = rooms['door3'] ?? false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +42,23 @@ class _HomeState extends State<Home> {
       body: Center(
         child: Column(
           children: [
-            buildRoomSwitch('Room 1', isDoorLocked1, (value) {
+            buildRoomSwitch('door1', 'Room 1', doorLock1, (value) {
               setState(() {
-                isDoorLocked1 = value;
+                doorLock1 = value;
               });
+              updateFirebaseValue('door1', value);
             }),
-            buildRoomSwitch('Room 2', isDoorLocked2, (value) {
+            buildRoomSwitch('door2', 'Room 2', doorLock2, (value) {
               setState(() {
-                isDoorLocked2 = value;
+                doorLock2 = value;
               });
+              updateFirebaseValue('door2', value);
             }),
-            buildRoomSwitch('Room 3', isDoorLocked3, (value) {
+            buildRoomSwitch('door3', 'Room 3', doorLock3, (value) {
               setState(() {
-                isDoorLocked3 = value;
+                doorLock3 = value;
               });
+              updateFirebaseValue('door3', value);
             }),
           ],
         ),
@@ -42,8 +66,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget buildRoomSwitch(
-      String roomName, bool isLocked, Function(bool) onChanged) {
+  Widget buildRoomSwitch(String databaseKey, String roomName, bool isLocked,
+      Function(bool) onChanged) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
       child: Row(
@@ -64,5 +88,9 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+  }
+
+  void updateFirebaseValue(String databaseKey, bool value) {
+    reference.child(databaseKey).set(value);
   }
 }
