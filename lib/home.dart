@@ -15,6 +15,7 @@ class _HomeState extends State<Home> {
   bool doorLock1 = false;
   bool doorLock2 = false;
   bool doorLock3 = false;
+  var tempDescription;
 
   @override
   void initState() {
@@ -28,6 +29,21 @@ class _HomeState extends State<Home> {
           doorLock1 = rooms['door1'] ?? false;
           doorLock2 = rooms['door2'] ?? false;
           doorLock3 = rooms['door3'] ?? false;
+        });
+      }
+    });
+
+    DatabaseReference tempReference = databaseRef.child('temp');
+    tempReference.onValue.listen((event) {
+      var snapshot = event.snapshot;
+      print(snapshot.value);
+      if (snapshot.value != null) {
+        setState(() {
+          tempDescription = snapshot.value.toString();
+        });
+      } else {
+        setState(() {
+          tempDescription = '';
         });
       }
     });
@@ -60,6 +76,11 @@ class _HomeState extends State<Home> {
               });
               updateFirebaseValue('door3', value);
             }),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+                'Temperature: ${tempDescription ?? ''}'), // Use the null-aware operator (??) to handle null values
           ],
         ),
       ),
